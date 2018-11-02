@@ -1,0 +1,61 @@
+apply plugin: 'com.mob.sdk'
+MobSDK {
+    appKey "278ab671b2b59"
+    appSecret "27be4552f03112c7d7be2d4417a62c8f"
+    ShareSDK {
+        //平台配置信息
+        devInfo {
+            SinaWeibo {
+                id 1
+                sortId 1
+                appKey "3069678069"
+                appSecret "7486a714be35f8e2858035d74eb4df8e"
+                callbackUri "http://hongbao.5979wenhua.com/hbapp/index.html"
+                shareByAppClient true
+                enable true
+            }
+
+            Wechat {
+                id 2
+                sortId 2
+                appId "wxf3fb9dfe2ff4c6ec"
+                appSecret "fac6d06961fac7b7040985f06753c8cc"
+                userName "gh_afb25ac019c9"
+                path "pages/index/index.html?id=1"
+                withShareTicket true
+                miniprogramType 0
+                bypassApproval false
+                enable true
+            }
+
+            WechatMoments {
+                id 3
+                sortId 3
+                appId "wxf3fb9dfe2ff4c6ec"
+                appSecret "fac6d06961fac7b7040985f06753c8cc"
+                bypassApproval false
+                enable true
+            }
+
+            QQ {
+                id 4
+                sortId 4
+                appId "101499412"
+                appKey "295b85da6a30a6f1c9e421d20a851469"
+                shareByAppClient true
+                bypassApproval false
+                enable true
+            }
+
+            QZone {
+                id 5
+                sortId 5
+                appId "101499412"
+                appKey "295b85da6a30a6f1c9e421d20a851469"
+                shareByAppClient true
+                bypassApproval false
+                enable true
+            }
+        }
+    }
+}

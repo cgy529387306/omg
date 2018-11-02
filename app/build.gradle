@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+apply from: 'MobSDK.gradle'
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.android.mb.mog"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 100
+        versionName "1.0.0"
+    }
+    //配置keystore签名
+    signingConfigs {
+        release {
+            storeFile file("mb.jks")
+            storePassword "mb2018"
+            keyAlias "mb2018"
+            keyPassword "mb2018"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    compile (name: 'alipaySdk-15.5.7-20181023110917', ext: 'aar')
+}
