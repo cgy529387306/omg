@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements JavaScriptInterfa
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.ECLAIR_MR1)
     @SuppressLint({"CommitPrefEdits", "AddJavascriptInterface", "SetJavaScriptEnabled"})
     private void initWebView(){
         webView = (WebView) findViewById(R.id.webView);

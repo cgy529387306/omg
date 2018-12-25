@@ -3,11 +3,13 @@ package com.android.mb.mog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
 import com.android.mb.mog.alipay.PayResult;
@@ -129,6 +131,18 @@ public class JavaScriptInterface {
     public void alipay(String orderInfo) {
         try {
             doAliPay(orderInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @JavascriptInterface
+    public void saveqrcode(String base64) {
+        try {
+            if (!TextUtils.isEmpty(base64) && base64.split(",").length>1){
+                boolean isSuccess = ImageUtils.saveImageToGallery(mContext,ImageUtils.stringToBitmap(base64.split(",")[1]));
+                Toast.makeText(mContext,isSuccess?"已保存至sdcard QrCode文件夹":"保存失败！",Toast.LENGTH_LONG).show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

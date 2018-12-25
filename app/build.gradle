@@ -9,8 +9,8 @@ android {
         applicationId "com.android.mb.mog"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 100
-        versionName "1.0.0"
+        versionCode 101
+        versionName "1.0.1"
     }
     //配置keystore签名
     signingConfigs {
