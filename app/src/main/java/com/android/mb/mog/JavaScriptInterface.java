@@ -67,6 +67,12 @@ public class JavaScriptInterface {
         void onLoginComplete(String plat,JSONObject jsonObject);
 
         void aliPayResult(int code);
+
+        void loginSuccess();
+
+        void downLoadVideo(String url);
+
+        void downLoadImage(String url);
     }
 
     public JavaScriptInterface(Context context,JsCallbackHandler callbackHandler) {
@@ -143,6 +149,33 @@ public class JavaScriptInterface {
                 boolean isSuccess = ImageUtils.saveImageToGallery(mContext,ImageUtils.stringToBitmap(base64.split(",")[1]));
                 Toast.makeText(mContext,isSuccess?"已保存至sdcard QrCode文件夹":"保存失败！",Toast.LENGTH_LONG).show();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @JavascriptInterface
+    public void loginsuccuss() {
+        try {
+            mCallbackHandler.loginSuccess();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @JavascriptInterface
+    public void downLoadVideo(String url) {
+        try {
+            mCallbackHandler.downLoadVideo(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @JavascriptInterface
+    public void downLoadImage(String url) {
+        try {
+            mCallbackHandler.downLoadImage(url);
         } catch (Exception e) {
             e.printStackTrace();
         }

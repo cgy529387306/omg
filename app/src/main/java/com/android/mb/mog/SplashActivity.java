@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
+import cn.jpush.android.api.JPushInterface;
 
 
 /**
@@ -15,10 +17,14 @@ import android.os.Handler;
  */
 
 public class SplashActivity extends Activity{
+
+    //SharedPreferences
+    public static final String KEY_REGISTRATION_ID = "KEY_REGISTRATION_ID";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        getRegisterId();
         new Handler().postDelayed(new Runnable() {
 
             public void run() {
@@ -30,4 +36,11 @@ public class SplashActivity extends Activity{
     }
 
 
+    private void getRegisterId(){
+        String rid = JPushInterface.getRegistrationID(getApplicationContext());
+        if (Helper.isNotEmpty(rid)) {
+            PreferencesHelper.getInstance().putString(KEY_REGISTRATION_ID,rid);
+            Log.d("jpush rid:",rid);
+        }
+    }
 }

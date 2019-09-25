@@ -9,9 +9,17 @@ android {
         applicationId "com.android.mb.mog"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 101
-        versionName "1.0.1"
+        versionCode 103
+        versionName "1.0.3"
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDir 'libs'
+        }
+    }
+
+
     //配置keystore签名
     signingConfigs {
         release {
@@ -40,8 +48,16 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:multidex:1.0.3'
     implementation "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
     implementation 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    implementation 'com.squareup.okhttp3:okhttp:3.6.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.3'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
+
     compile (name: 'alipaySdk-15.5.7-20181023110917', ext: 'aar')
 }

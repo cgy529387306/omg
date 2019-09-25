@@ -24,26 +24,39 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.alipay.sdk.app.H5PayCallback;
 import com.alipay.sdk.app.PayTask;
 import com.alipay.sdk.util.H5PayResultModel;
+import com.android.mb.mog.download.Constant;
+import com.android.mb.mog.download.DownloadInfo;
+import com.android.mb.mog.download.DownloadManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.jpush.android.api.JPushInterface;
 import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
 
 public class MainActivity extends AppCompatActivity implements JavaScriptInterface.JsCallbackHandler{
     private WebView webView;
     private String webUrl = "http://manougou.5979wenhua.com/mobile/index.html";
+//    private String webUrl = "http://manougou.5979wenhua.com/api/down.html";
     public static final int FILE_CHOOSER_RESULT_CODE = 5173;
     private ValueCallback<Uri> uploadMessage;
     private ValueCallback<Uri[]> uploadMessageAboveL;
     private LocalBroadcastManager mLocalBroadcastManager;
+    private DownloadInfo downloadInfo;
+    private MaterialDialog mMaterialDialog;
     /**
      * 更新用户信息广播接受者
      */
@@ -60,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements JavaScriptInterfa
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         mLocalBroadcastManager.unregisterReceiver(mReceiver);
         webView.destroy();
         webView = null;
@@ -70,10 +84,55 @@ public class MainActivity extends AppCompatActivity implements JavaScriptInterfa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EventBus.getDefault().register(this);
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mLocalBroadcastManager.registerReceiver(mReceiver, new IntentFilter("WXPay_Result"));
         initWebView();
         setWebChromeClient();
+    }
+
+    private void showDialog(){
+        mMaterialDialog = new MaterialDialog.Builder(this)
+                .title("下载")
+                .content("下载中，请稍等...")
+                .progress(true, 0)
+                .progressIndeterminateStyle(true)
+                .show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void update(DownloadInfo info){
+        if (DownloadInfo.DOWNLOAD.equals(info.getDownloadStatus())){
+            downloadInfo = info;
+            if (info.getTotal() == 0){
+                mMaterialDialog.setProgress(0);
+            }else{
+                float progress = info.getProgress() * mMaterialDialog.getMaxProgress() / info.getTotal();
+                mMaterialDialog.setProgress((int) progress);
+            }
+        }else if (DownloadInfo.DOWNLOAD_OVER.equals(info.getDownloadStatus())){
+            Toast.makeText(this,"下载成功",Toast.LENGTH_SHORT).show();
+            mMaterialDialog.setProgress(mMaterialDialog.getMaxProgress());
+            mMaterialDialog.dismiss();
+            try {
+                //刷新相册
+                File imgFile = new File(Constant.FILE_PATH, info.getFileName());
+                if (imgFile.exists()) {
+                    Uri uri = Uri.fromFile(imgFile);
+                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    intent.setData(uri);
+                    sendBroadcast(intent);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else if (DownloadInfo.DOWNLOAD_PAUSE.equals(info.getDownloadStatus())){
+            Toast.makeText(this,"下载暂停",Toast.LENGTH_SHORT).show();
+        }else if (DownloadInfo.DOWNLOAD_CANCEL.equals(info.getDownloadStatus())){
+            Toast.makeText(this,"下载取消",Toast.LENGTH_SHORT).show();
+        }else if (DownloadInfo.DOWNLOAD_ERROR.equals(info.getDownloadStatus())){
+            Toast.makeText(this,"下载出错",Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -241,6 +300,32 @@ public class MainActivity extends AppCompatActivity implements JavaScriptInterfa
         //1:成功 0:失败
         String jsStr = "javascript:aliPayComplete()";
         loadJs(jsStr);
+    }
+
+    @Override
+    public void loginSuccess() {
+        String rid = PreferencesHelper.getInstance().getString(SplashActivity.KEY_REGISTRATION_ID);
+        if (Helper.isEmpty(rid)){
+            rid = JPushInterface.getRegistrationID(getApplicationContext());
+        }
+        String jsStr = "javascript: jiguanreg('" + rid + "')";
+        loadJs(jsStr);
+    }
+
+    @Override
+    public void downLoadVideo(String url) {
+        if (Helper.isNotEmpty(url)){
+            showDialog();
+            DownloadManager.getInstance().download(url);
+        }
+    }
+
+    @Override
+    public void downLoadImage(String url) {
+        if (Helper.isNotEmpty(url)){
+            showDialog();
+            DownloadManager.getInstance().download(url);
+        }
     }
 
     private void wxLoginComplete(JSONObject jsonObject){
